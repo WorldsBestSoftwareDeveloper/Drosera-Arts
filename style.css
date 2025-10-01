@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --drosera-orange: #FF6A00;
+  --drosera-black: #0A0A0A;
+}
+
+.text-drosera-orange { color: var(--drosera-orange); }
+.bg-drosera-orange { background-color: var(--drosera-orange); }
+.bg-drosera-black { background-color: var(--drosera-black); }
