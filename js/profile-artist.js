@@ -25,7 +25,6 @@ export function renderArtistProfile(container) {
 
   const gallery = container.querySelector('#artist-gallery');
 
-  // Render each artwork as a card
   artworks.forEach(art => {
     const card = document.createElement('div');
     card.className = `
@@ -39,8 +38,17 @@ export function renderArtistProfile(container) {
       </div>
       <p class="font-semibold text-center">${art.title}</p>
       <div class="flex items-center space-x-2 mt-2">
-        <button data-like="${art.id}" class="like-btn text-drosera-orange hover:underline">
-          ♥ Like
+        <button data-like="${art.id}" class="like-btn flex items-center space-x-1">
+          <svg id="artist-heart-${art.id}"
+               xmlns="http://www.w3.org/2000/svg"
+               class="h-5 w-5 transition-colors duration-300 ${art.liked ? 'text-red-500' : 'text-gray-400'}"
+               fill="none"
+               viewBox="0 0 24 24"
+               stroke="currentColor"
+               stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.637l1.318-1.319a4.5 4.5 0 116.364 6.364L12 21.364l-7.682-7.682a4.5 4.5 0 010-6.364z"/>
+          </svg>
         </button>
         <span id="artist-like-count-${art.id}" class="text-sm text-gray-600">
           ${art.likes}
@@ -48,20 +56,23 @@ export function renderArtistProfile(container) {
       </div>
     `;
 
-    // Like button handler
-    card.querySelector('.like-btn').addEventListener('click', e => {
-      const artId = parseInt(e.target.getAttribute('data-like'), 10);
-      const targetArt = artworks.find(a => a.id === artId);
-      if (targetArt) {
-        targetArt.likes++;
-        // Update count in this page
-        card.querySelector(`#artist-like-count-${artId}`).textContent = targetArt.likes;
+    const likeBtn = card.querySelector('.like-btn');
+    const heartIcon = card.querySelector(`#artist-heart-${art.id}`);
+    likeBtn.addEventListener('click', () => {
+      art.liked = !art.liked;
+      art.likes += art.liked ? 1 : -1;
 
-        // Also update like count in homepage (if user goes back there)
-        const homeLikeCount = document.getElementById(`like-count-${artId}`);
-        if (homeLikeCount) {
-          homeLikeCount.textContent = targetArt.likes;
-        }
+      heartIcon.classList.toggle('text-red-500', art.liked);
+      heartIcon.classList.toggle('text-gray-400', !art.liked);
+      document.getElementById(`artist-like-count-${art.id}`).textContent = art.likes;
+
+      // Update homepage if visible
+      const homeCount = document.getElementById(`like-count-${art.id}`);
+      if (homeCount) homeCount.textContent = art.likes;
+      const homeHeart = document.querySelector(`[data-like="${art.id}"] .heart-icon`);
+      if (homeHeart) {
+        homeHeart.classList.toggle('text-red-500', art.liked);
+        homeHeart.classList.toggle('text-gray-400', !art.liked);
       }
     });
 
